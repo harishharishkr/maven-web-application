@@ -6,8 +6,8 @@ tools{
 maven 'maven3.8.3'
 }
 triggers{
-//pollSCM('* * * * *')
-cron('* * * * *')
+  pollSCM('* * * * *')
+//cron('* * * * *')
 //githubPush()
 }
 
