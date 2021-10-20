@@ -1,0 +1,74 @@
+pipeline{
+
+agent any
+
+tools{
+maven 'maven3.8.3'
+}
+triggers{
+//pollSCM('* * * * *')
+cron('* * * * *')
+//githubPush()
+}
+
+options{
+buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '5', numToKeepStr: ''))
+
+timestamps()
+}
+
+
+
+stages {
+   stage('CheckoutCode'){
+     steps{
+     git branch: 'development', credentialsId: '2ccbe603-4000-4f99-bf57-f914a4dbba13', url: 'https://github.com/harishharishkr/maven-web-application.git'
+ }
+}
+
+   stage('Build'){
+    steps{
+    sh "mvn clean package"
+    }
+   }
+   stage('ExecuteSonarQubeReport'){
+    steps{
+    sh "mvn clean sonar:sonar"
+    }
+   }
+   stage('UploadArtifactsIntoNexus'){
+    steps{
+    sh "mvn clean deploy"
+    }
+   }
+
+   stage('DeployintotheTomcatServer'){
+    steps{
+    sshagent(['04987961-fc2e-4b0a-887d-657d9bc52079']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@13.127.173.164:/opt/apache-tomcat-9.0.54/webapps/"
+     }
+    }
+   }
+
+ }
+ post{
+    success{
+    emailext body: '''Build information regarding project
+
+    regards,
+    hareesh
+    7337009013''', subject: 'Build info', to: 'hareeshkumar.9356@gmail.com'
+    
+    }
+    failure{
+      emailext body: '''Build information regarding project
+
+    regards,
+    hareesh
+    7337009013''', subject: 'Build info', to: 'hareeshkumar.9356@gmail.com'
+    
+    } 
+ 
+}
+
+}
