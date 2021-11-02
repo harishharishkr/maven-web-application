@@ -9,7 +9,7 @@ properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKe
 
 stage('CheckoutCode'){
 
-git branch: '*/development', url: 'https://github.com/harishharishkr/maven-web-application.git'
+git branch: 'development', url: 'https://github.com/harishharishkr/maven-web-application.git'
 
 }
 
