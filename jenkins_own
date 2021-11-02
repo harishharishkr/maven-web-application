@@ -26,7 +26,7 @@ stage('UploadArtifactsIntoNexusRepo'){
 sh "${mavenHome}/bin/mvn deploy"
 
 }
-
+/*
 stage('DeployIntoTomcatServer'){
 
 sshagent(['2375d0ef-98d2-4696-aadc-b8e75d6d7e8a']) {
@@ -35,7 +35,7 @@ sh "scp target/maven-web-application.war ec2-user@15.206.169.237:/opt/apache-tom
 }
 
 }
-
+*/
 stage('SendEmailNotification'){
 
 emailext body: '''Build information regardint that maven-web-application .
