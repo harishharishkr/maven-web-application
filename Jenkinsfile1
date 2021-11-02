@@ -15,7 +15,7 @@ git branch: '*/development', url: 'https://github.com/harishharishkr/maven-web-a
 
 stage('Build'){
 
-sh "${mavenHome}/bin/mvn clean package
+sh "${mavenHome}/bin/mvn clean package"
 
 }
 
