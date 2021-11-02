@@ -1,0 +1,49 @@
+node
+{
+
+def mavenHome = tool name:"maven3.6.3"
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([pollSCM('* * * * *')])])
+
+stage('CheckoutCode'){
+
+git branch: 'development', credentialsId: 'cf1ed509-16cf-4936-9026-24531f4bebe1', url: 'https://github.com/harishharishkr/maven-web-application.git'
+
+}
+stage('BuildCode'){
+
+sh "${mavenHome}/bin/mvn clean package"
+
+}
+
+stage('ExecuteSonarQubeReport'){
+
+sh "${mavenHome}/bin/mvn sonar:sonar"
+
+}
+stage('UploadArtifactsIntoNexusRepo'){
+
+sh "${mavenHome}/bin/mvn deploy"
+
+}
+
+stage('DeployIntoTomcatServer'){
+
+sshagent(['2375d0ef-98d2-4696-aadc-b8e75d6d7e8a']) {
+sh "scp target/maven-web-application.war ec2-user@15.206.169.237:/opt/apache-tomcat-9.0.54/webapps"
+
+}
+
+}
+
+stage('SendEmailNotification'){
+
+emailext body: '''Build information regardint that maven-web-application .
+
+regards,
+hareesh,
+7337009013,
+bangalore''', subject: 'build info', to: 'hareeshkumar.9356@gmail.com'
+
+}
+}
